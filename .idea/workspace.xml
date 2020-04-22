@@ -2,28 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dcfe38a4-3296-4700-b086-747f2ab196fa" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Auth.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/AuthForm/AuthForm.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/AuthForm/index.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/AuthValidation.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Dashboard.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/NavBar.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/SideNav.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/SidePage.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/SidePageStyle.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.test.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/logo.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/serviceWorker.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/setupTests.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,6 +46,7 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Licenta\front-end\src" />
       <recent name="D:\Licenta\front-end\src\AuthForm" />
     </key>
   </component>
@@ -97,18 +77,42 @@
       <updated>1586980657122</updated>
       <workItem from="1586980659461" duration="10429000" />
       <workItem from="1587058658480" duration="619000" />
-      <workItem from="1587492176601" duration="18693000" />
+      <workItem from="1587492176601" duration="19032000" />
     </task>
+    <task id="LOCAL-00001" summary="Added validation to auth form">
+      <created>1587522717729</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1587522717730</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Added validation to auth form" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added validation to auth form" />
+  </component>
   <component name="WindowStateProjectService">
+    <state x="361" y="75" key="#Notifications" timestamp="1587522864633">
+      <screen x="0" y="0" width="1536" height="834" />
+    </state>
+    <state x="361" y="75" key="#Notifications/0.0.1536.834@0.0.1536.834" timestamp="1587522864633" />
     <state x="2610" y="271" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1586991395145">
       <screen x="1920" y="0" width="1920" height="1050" />
     </state>
     <state x="2610" y="271" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1586991395145" />
+    <state x="391" y="0" key="CommitChangelistDialog2" timestamp="1587522969166">
+      <screen x="0" y="0" width="1536" height="834" />
+    </state>
+    <state x="391" y="0" key="CommitChangelistDialog2/0.0.1536.834@0.0.1536.834" timestamp="1587522969166" />
+    <state x="93" y="93" width="1350" height="648" key="DiffContextDialog" timestamp="1587522964332">
+      <screen x="0" y="0" width="1536" height="834" />
+    </state>
+    <state x="93" y="93" width="1350" height="648" key="DiffContextDialog/0.0.1536.834@0.0.1536.834" timestamp="1587522964332" />
     <state x="2660" y="279" key="FileChooserDialogImpl" timestamp="1587501125546">
       <screen x="1920" y="0" width="1920" height="1050" />
     </state>
@@ -161,10 +165,10 @@
       <screen x="1920" y="0" width="1920" height="1050" />
     </state>
     <state width="1899" height="330" key="GridCell.Tab.3.right/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1586993931600" />
-    <state x="361" y="146" key="Vcs.Push.Dialog.v2" timestamp="1587522690176">
+    <state x="361" y="146" key="Vcs.Push.Dialog.v2" timestamp="1587522979975">
       <screen x="0" y="0" width="1536" height="834" />
     </state>
-    <state x="361" y="146" key="Vcs.Push.Dialog.v2/0.0.1536.834@0.0.1536.834" timestamp="1587522690176" />
+    <state x="361" y="146" key="Vcs.Push.Dialog.v2/0.0.1536.834@0.0.1536.834" timestamp="1587522979975" />
     <state x="2536" y="243" key="run.anything.popup" timestamp="1586983791001">
       <screen x="1920" y="0" width="1920" height="1050" />
     </state>
