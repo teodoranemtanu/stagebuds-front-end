@@ -5,16 +5,26 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import Grid from "@material-ui/core/Grid";
 import Link from "@material-ui/core/Link";
-import {getSidePageStyle} from "./SidePageStyle";
-
+import {useTheme, makeStyles} from "@material-ui/core/styles";
 
 const signUpText = "Don't have an account? Sign up!";
 const signInText = "Already have an account? Sign in";
 
+const useStyles = makeStyles((theme) => ({
+    form: {
+        width: '100%', // Fix IE 11 issue.
+            marginTop: theme.spacing(2),
+    },
+    submit: {
+        margin: theme.spacing(3, 0, 2),
+    }
+}));
+
 const AuthForm = (props) => {
-    const styles = theme => getSidePageStyle(theme);
+    const theme = useTheme();
+    const classes = useStyles(theme);
     const {
-        values: { firstName, lastName, email, password },
+        // values: { firstName, lastName, email, password },
         errors,
         touched,
         handleChange,
@@ -24,7 +34,6 @@ const AuthForm = (props) => {
         onModeChange,
         handleSubmit
     } = props;
-
 
     const switchModeHandler = (isLoginMode) => {
         onModeChange(!isLoginMode);
@@ -37,10 +46,7 @@ const AuthForm = (props) => {
     };
 
     return (
-        <form className={'form'}  onSubmit={handleSubmit}>
-            <div>
-                {console.log()}
-            </div>
+        <form className={classes.form}  onSubmit={handleSubmit}>
             <TextField
                 variant="outlined"
                 margin="normal"
@@ -111,7 +117,7 @@ const AuthForm = (props) => {
                 variant="contained"
                 color="primary"
                 disabled={!isValid}
-                className={styles.submit}
+                className={classes.submit}
             >
                 {isLoginMode ? 'Sign In' : 'Create Account'}
             </Button>
