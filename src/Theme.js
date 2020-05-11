@@ -1,16 +1,28 @@
-import { createMuiTheme } from '@material-ui/core/styles';
+import {createMuiTheme} from '@material-ui/core/styles';
 
 const Theme = createMuiTheme({
     typography: {
         useNextVariants: true,
     },
     palette: {
+        // primary: {
+        //     light: '#B2EBF2',
+        //     main: '#00BCD4',
+        //     dark: '#0097A7',
+        //     contrastText: '#fff',
+        //     text: '#212121',
+        // },
         primary: {
-            light: '#63ccff',
-            main: '#009be5',
-            dark: '#006db3',
+            dark: '#0097a7',
+            main: "#00bcd4",
             contrastText: '#fff',
+            shadow: "rgba(0, 0, 0, 0.54)"
         },
+        secondary: {
+            main: "#ff5722",
+            light: "#ffab91",
+            // contrastText: "#025965"
+        }
     },
     shape: {
         borderRadius: 8,

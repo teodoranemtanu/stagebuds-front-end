@@ -12,11 +12,15 @@ const signInText = "Already have an account? Sign in";
 
 const useStyles = makeStyles((theme) => ({
     form: {
-        width: '100%', // Fix IE 11 issue.
-            marginTop: theme.spacing(2),
+         // Fix IE 11 issue.
+        marginTop: theme.spacing(2),
     },
     submit: {
         margin: theme.spacing(3, 0, 2),
+        backgroundColor: theme.palette.primary.dark
+    },
+    secondaryText: {
+        color: theme.palette.primary.dark
     }
 }));
 
@@ -123,12 +127,12 @@ const AuthForm = (props) => {
             </Button>
             <Grid container>
                 {isLoginMode && <Grid item xs>
-                    <Link href="#" variant="body2">
+                    <Link href="#" variant="body2" className={classes.secondaryText}>
                         Forgot password?
                     </Link>
                 </Grid>}
                 <Grid item>
-                    <Link href="#" onClick={switchModeHandler} variant="body2">
+                    <Link href="#" onClick={switchModeHandler} variant="body2" className={classes.secondaryText}>
                         {isLoginMode ? signUpText : signInText}
                     </Link>
                 </Grid>

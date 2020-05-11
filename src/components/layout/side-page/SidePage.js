@@ -12,7 +12,6 @@ import useTheme from "@material-ui/core/styles/useTheme";
 const SidePage = (props) => {
     const theme = useTheme();
     const classes = useStyles(theme);
-    console.log(theme);
     return (
         <Grid container component="main" className={classes.root}>
             <CssBaseline/>

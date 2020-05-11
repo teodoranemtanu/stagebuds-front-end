@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import Drawer from "@material-ui/core/Drawer";
 import Toolbar from "@material-ui/core/Toolbar";
 import List from "@material-ui/core/List";
@@ -6,34 +6,18 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Divider from "@material-ui/core/Divider";
 import {makeStyles, useTheme} from "@material-ui/core/styles";
+import Paper from "@material-ui/core/Paper";
+import {Buttons} from "./SideNavButtons";
+import Link from "@material-ui/core/Link";
+import Button from "@material-ui/core/Button";
 
-const buttons = [
-    {
-        title: 'Feed',
-        link: '/'
-    },
-    {
-        title: 'Gig Offer',
-        link: '/'
-    },
-    {
-        title: 'Future Concerts',
-        link: '/'
-    },
-    {
-        title: 'Your Concerts',
-        link: '/'
-    }
-];
-
-const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
     drawer: {
-        width: drawerWidth,
+        // width: drawerWidth,
         flexShrink: 0,
     },
     drawerPaper: {
-        width: drawerWidth,
+        // width: drawerWidth,
     },
     drawerContainer: {
         overflow: 'auto',
@@ -45,28 +29,31 @@ const SideNav = (props) => {
     const classes = useStyles(theme);
 
     return (
-        <Drawer
-            className={classes.drawer}
-            variant="permanent"
-            classes={{
-                paper: classes.drawerPaper,
-            }}
-        >
-            <Toolbar />
-            <div className={classes.drawerContainer}>
-                <List>
-                    {buttons.map(({title, link}) => (
-                        <React.Fragment>
-                            <ListItem button key={title} onClick={console.log(title)}>
-                                {/*<ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>*/}
-                                <ListItemText primary={title} />
-                            </ListItem>
-                            <Divider />
-                        </React.Fragment>
-                    ))}
-                </List>
-            </div>
-        </Drawer>
+        <Paper elevation={3}>
+            <Drawer
+                className={classes.drawer}
+                variant="permanent"
+                classes={{
+                    paper: classes.drawerPaper,
+                }}
+            >
+                <Toolbar/>
+                <div className={classes.drawerContainer}>
+                    <List>
+                        {Buttons.map(({label, link, action}) => (
+                            <React.Fragment>
+                                <ListItem button key={action} value={action} >
+                                    <Link href={link} color="inherit">
+                                        <ListItemText>{label}</ListItemText>
+                                    </Link>
+                                </ListItem>
+                                <Divider/>
+                            </React.Fragment>
+                        ))}
+                    </List>
+                </div>
+            </Drawer>
+        </Paper>
     );
 };
 
