@@ -1,6 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import Drawer from "@material-ui/core/Drawer";
-import Toolbar from "@material-ui/core/Toolbar";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -9,36 +8,55 @@ import {makeStyles, useTheme} from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import {Buttons} from "./SideNavButtons";
 import Link from "@material-ui/core/Link";
-import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
+import ChevronLeftIcon  from '@material-ui/icons/Close';
+
+let drawerWidth = 250;
 
 const useStyles = makeStyles((theme) => ({
     drawer: {
-        // width: drawerWidth,
+        width: drawerWidth,
         flexShrink: 0,
     },
+    drawerHeader: {
+        display: 'flex',
+        alignItems: 'center',
+        padding: theme.spacing(0, 1),
+        // necessary for content to be below app bar
+        ...theme.mixins.toolbar,
+        justifyContent: 'flex-end',
+    },
     drawerPaper: {
-        // width: drawerWidth,
+        width: drawerWidth,
     },
-    drawerContainer: {
-        overflow: 'auto',
-    },
+    // drawerContainer: {
+    //     overflow: 'auto',
+    // },
 }));
 
 const SideNav = (props) => {
     const theme = useTheme();
     const classes = useStyles(theme);
+    const open = props.open;
 
     return (
-        <Paper elevation={3}>
-            <Drawer
-                className={classes.drawer}
-                variant="permanent"
-                classes={{
-                    paper: classes.drawerPaper,
-                }}
+         <Paper elevation={3}>
+             <Drawer
+                 className={classes.drawer}
+                 variant="persistent"
+                 anchor="left"
+                 open={open}
+                 classes={{
+                     paper: classes.drawerPaper,
+                 }}
             >
-                <Toolbar/>
-                <div className={classes.drawerContainer}>
+                 <div className={classes.drawerHeader}>
+                     <IconButton onClick={props.handleDrawerClose}>
+                         <ChevronLeftIcon />
+                     </IconButton>
+                 </div>
+                 <Divider />
+                {/*<div className={classes.drawerContainer}>*/}
                     <List>
                         {Buttons.map(({label, link, action}) => (
                             <React.Fragment>
@@ -51,7 +69,7 @@ const SideNav = (props) => {
                             </React.Fragment>
                         ))}
                     </List>
-                </div>
+                {/*</div>*/}
             </Drawer>
         </Paper>
     );

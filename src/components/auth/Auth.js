@@ -24,7 +24,6 @@ const Auth = () => {
 
         if (isLoginMode) {
             try {
-
                 const responseData = await sendRequest(
                     'http://localhost:5000/api/users/login',
                     'POST',

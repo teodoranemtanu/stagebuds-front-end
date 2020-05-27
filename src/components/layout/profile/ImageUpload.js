@@ -1,12 +1,12 @@
-import React, {useState} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import {DropzoneDialog} from 'material-ui-dropzone'
 import Button from "@material-ui/core/Button";
 import {useTheme} from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import {makeStyles} from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
-
-const PICTURE_LINK = "https://source.unsplash.com/2uSnxq3M4GE/640x426";
+import {AuthContext} from "../../../contexts/AuthContext";
+import {useHttpClient} from "../../../hooks/http-hook";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -23,31 +23,59 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-
 const ImageUpload = (props) => {
     const theme = useTheme();
+    const auth = useContext(AuthContext);
     const classes = useStyles(theme);
+    const {isLoading, error, sendRequest, clearError} = useHttpClient();
+
     const [isOpenedDrawer, setOpenDrawer] = useState(false);
-    const [files, setFiles] = useState([]);
+    const [profilePicture, setProfilePicture] = useState(props.profilePicture);
+
+    useEffect(() => {
+        setProfilePicture(props.profilePicture);
+    }, [props.profilePicture]);
+
+    useEffect(()=> {
+        props.onUpdate(profilePicture);
+    }, [profilePicture]);
 
     const handleClose = () => {
         setOpenDrawer(false);
     };
 
     const handleOpen = () => {
-        console.log(isOpenedDrawer);
         setOpenDrawer(true);
     };
 
-    const handleSave = (file) => {
+    const handleSave = async (file) => {
+        // file will be an array; access it with file[0]
         //Saving files to state for further use and closing Modal.
-        setFiles([...files, file]);
+        const formData = new FormData();
+        let response;
+        formData.append('image', file[0]);
+        try {
+            response = await sendRequest(
+                'http://localhost:5000/api/users/uploadImage',
+                'POST',
+                formData,
+                {
+                    "Authorization": 'Bearer: ' + auth.token
+                }
+            );
+        } catch (err) {
+            console.log(err);
+        }
+
+        if (response) {
+            setProfilePicture(response.data);
+        }
         setOpenDrawer(false);
     };
 
     return (
         <Box m={2} className={classes.root}>
-            <Avatar  src={PICTURE_LINK} className={classes.photo} />
+            <Avatar src={profilePicture} className={classes.photo}/>
             <br/>
             <Button
                 onClick={handleOpen}
@@ -59,10 +87,11 @@ const ImageUpload = (props) => {
             <DropzoneDialog
                 open={isOpenedDrawer}
                 onSave={handleSave}
-                acceptedFiles={['image/jpeg', 'image/png', 'image/bmp']}
-                showPreviews={true}
+                acceptedFiles={['image/jpeg', 'image/png', 'image/jpg']}
                 maxFileSize={5000000}
                 onClose={handleClose}
+                filesLimit={1}
+                dropzoneText="Drag or click here to add a new photo."
             />
         </Box>
     );

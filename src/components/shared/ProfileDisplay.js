@@ -1,17 +1,11 @@
 import React from 'react';
 import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
 import Avatar from "@material-ui/core/Avatar";
 import Box from "@material-ui/core/Box";
 import {makeStyles} from "@material-ui/core/styles";
 import {useTheme} from "@material-ui/core";
 import Divider from "@material-ui/core/Divider";
-import PostItem from "../../timeline/PostItem";
-import Paper from "@material-ui/core/Paper";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Chip from "@material-ui/core/Chip";
-import ChipArray from "../../../shared/ChipArray";
+import ChipArray from "./ChipArray";
 
 const useStyles = makeStyles(theme => ({
     root: {},
@@ -29,18 +23,16 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-
 const ProfileDisplay = (props) => {
     const theme = useTheme();
     const classes = useStyles(theme);
-    const userInfo = props.userInfo;
 
     return (
         <React.Fragment>
             <Box className={classes.title} m={1}>
-                <Avatar src={userInfo.profilePicture} className={classes.photo}/>
+                <Avatar src={props.userInfo.profilePicture} className={classes.photo}/>
                 <Typography component="h2" variant="h6" margin='normal' color="textPrimary">
-                    {userInfo.firstName} {userInfo.lastName}
+                    {props.userInfo.firstName} {props.userInfo.lastName}
                 </Typography>
             </Box>
 
@@ -48,22 +40,16 @@ const ProfileDisplay = (props) => {
                 Description:
             </Typography>
             <Typography component="p" paragraph variant="body2" align="justify" margin='normal'>
-                {userInfo.description}
+                {props.userInfo.description}
             </Typography>
             <Divider/>
             <Box className={classes.content} mt={2}>
-                {console.log(userInfo.bands)}
-                {/*<ChipArray title='Favourite Bands' items={userInfo.bands}/>*/}
-                {/*<ChipArray title='Favourite Musical Genres' items={userInfo.genres}/>*/}
-                {/*<ChipArray title='Favourite Concerts Attended' items={userInfo.concerts}/>*/}
+                <ChipArray title='Favourite Bands' items={props.userInfo.bands}/>
+                <ChipArray title='Favourite Musical Genres' items={props.userInfo.genres}/>
+                <ChipArray title='Favourite Concerts Attended' items={props.userInfo.concerts}/>
             </Box>
-
-
         </React.Fragment>
-
     );
-
 };
-
 
 export default ProfileDisplay;
