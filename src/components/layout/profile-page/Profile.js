@@ -23,8 +23,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Profile = (props) => {
-    const addInformationText = 'Edit your profile information';
-    const profilePictureText = 'Upload a new profile picture';
+    const addInformationText = 'Edit your profile-page information';
+    const profilePictureText = 'Upload a new profile-page picture';
 
     const theme = useTheme();
     const classes = useStyles(theme);

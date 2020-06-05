@@ -7,6 +7,7 @@ import {useTheme} from "@material-ui/core";
 const useStyes = makeStyles((theme) => ({
     chip: {
         margin: theme.spacing(0.5),
+        overflowWrap: 'break-word',
     }
 }));
 

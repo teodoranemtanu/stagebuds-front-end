@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
@@ -53,8 +53,24 @@ const PostItem = (props) => {
     const [deleteDialog, setDeleteDialog] = useState(false);
     const [editDialog, setEditDialog] = useState(false);
 
+    useEffect(() => {
+        const getPostLike = async () => {
+            try {
+                const response = await sendRequest(`http://localhost:5000/api/likes/liked/${post.id}`,
+                    'GET', null,
+                    {
+                        "Authorization": 'Bearer: ' + auth.token
+                    });
+                console.log(response);
+                setLiked(response.liked);
+            } catch (e) {
+                console.log(e);
+            }
+        };
+        getPostLike();
+    }, [auth.token, post.id, sendRequest]);
+
     const handleLikeEvent = async () => {
-        console.log(liked);
         if (liked === false) {
             const timestamp = new Date(Date.now());
             const responseData = await sendRequest(
@@ -69,6 +85,7 @@ const PostItem = (props) => {
                 }
             );
             setLiked(true);
+            props.notificationSocket.emit('addLike', {userId: auth.userId, postId: post.id});
         } else {
             try {
                 const response = await sendRequest(`http://localhost:5000/api/likes/${post.id}`,

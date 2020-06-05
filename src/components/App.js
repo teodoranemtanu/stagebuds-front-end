@@ -1,5 +1,4 @@
-import React, {useState} from 'react';
-import ReactDOM from "react-dom";
+import React, {useEffect, useState} from 'react';
 import {
     BrowserRouter as Router,
     Route,
@@ -11,20 +10,21 @@ import {
 import SidePage from './layout/side-page/SidePage';
 import {useAuth} from "../hooks/auth-hook";
 import {AuthContext} from "../contexts/AuthContext";
-import Dashboard from "./layout/dashboard/Dashboard";
+import Dashboard from "./layout/dashboard-page/Dashboard";
 import Grid from "@material-ui/core/Grid";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import NavBar from "./navigation/NavBar";
 import SideNav from "./navigation/SideNav";
 import {makeStyles} from "@material-ui/core/styles";
 import {useTheme} from "@material-ui/styles";
-import Profile from "./layout/profile/Profile";
+import Profile from "./layout/profile-page/Profile";
 import clsx from "clsx";
 import CreatePost from "./layout/create-post/CreatePost";
-import UserProfileDisplay from "./layout/profile/UserProfileDisplay";
-import Typography from "@material-ui/core/Typography";
-import PostList from "./shared/posts/PostList";
+import UserProfileDisplay from "./layout/profile-page/UserProfileDisplay";
 import PostsDisplay from "./layout/posts-display-page/PostsDisplay";
+import Messenger from "./layout/messages-page/Messenger";
+import socket from '../utils/socketConnection';
+import {nsConnection} from '../utils/nsConnection';
 
 let drawerWidth = 250;
 const useStyles = makeStyles((theme) => ({
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     },
     content: {
         flexGrow: 1,
-        padding: theme.spacing(5,8),
+        padding: theme.spacing(5, 8),
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
@@ -64,9 +64,13 @@ const App = (props) => {
     const {token, login, logout, userId} = useAuth();
     const theme = useTheme();
     const classes = useStyles(theme);
+
     let routes;
 
     const [open, setOpen] = useState(false);
+    const [notificationSocket, setNotificationSocket] = useState(null);
+
+    let nsSocket;
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -76,27 +80,39 @@ const App = (props) => {
         setOpen(false);
     };
 
+    useEffect(() => {
+        if(token) {
+            socket.emit('clientAuth', {token, userId});
+
+            socket.on('goodAuth', () => {
+                nsSocket = nsConnection('/notifications');
+                setNotificationSocket(nsSocket);
+            })
+        }
+    }, [token, userId]);
+
+
     if (token) {
         routes = (
-            <Grid container  style={{
+            <Grid container style={{
                 margin: 0,
                 width: '100%',
                 flexGrow: 1
             }} component="div" spacing={2} className={classes.root}>
                 <CssBaseline/>
                 <Grid item xs={12} lg={12} xl={12}>
-                    <NavBar handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose}  open={open}/>
+                    <NavBar handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} open={open}/>
                 </Grid>
                 <Grid item lg={3} xl={3}>
-                    <SideNav handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose}  open={open} />
+                    <SideNav handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} open={open}/>
                 </Grid>
                 <Grid item xs={10} sm={10} lg={8} xl={8} component="main" className={clsx(classes.content, {
                     [classes.contentShift]: open,
                 })}>
-                    <div className={classes.drawerHeader} />
+                    <div className={classes.drawerHeader}/>
                     <Switch>
                         <Route path="/" exact>
-                            <Dashboard/>
+                            <Dashboard notificationSocket={notificationSocket}/>
                         </Route>
 
                         <Route path="/user/edit" exact>
@@ -116,11 +132,11 @@ const App = (props) => {
                         </Route>
 
                         <Route path="/post/myPosts" exact>
-                            <PostsDisplay />
+                            <PostsDisplay/>
                         </Route>
 
                         <Route path="/messages" exact>
-                            <div>profile user </div>
+                            <Messenger/>
                         </Route>
 
                         <Redirect to="/"/>

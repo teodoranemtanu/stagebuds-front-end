@@ -17,7 +17,6 @@ const Dashboard = (props) => {
                         "Authorization": 'Bearer: ' + auth.token
                     });
                 setPosts(response);
-                console.log(response);
             } catch (err) {
                 console.log(err);
             }
@@ -26,7 +25,7 @@ const Dashboard = (props) => {
     }, [auth.token, sendRequest]);
 
     return (
-        <PostList posts={posts}/>
+        <PostList notificationSocket={props.notificationSocket} posts={posts}/>
     );
 };
 

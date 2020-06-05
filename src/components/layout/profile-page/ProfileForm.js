@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
 const ProfileForm = (props) => {
     const theme = useTheme();
     const classes = useStyles(theme);
-    const submitText = 'Edit your profile';
+    const submitText = 'Edit your profile-page';
     const [description, setDescription] = useState("");
     const [bandsChipValues, setBandsChipValues] = useState([]);
     const [genresChipValues, setGenresChipValues] = useState([]);

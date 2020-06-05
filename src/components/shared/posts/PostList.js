@@ -11,6 +11,7 @@ const PostList = (props) => {
                               editMode={props.editMode}
                               deletePost={props.deletePost}
                               editPost={props.editPost}
+                              notificationSocket={props.notificationSocket}
                     />
                 </Grid>
             ))}
