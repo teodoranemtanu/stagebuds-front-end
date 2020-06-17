@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
     BrowserRouter as Router,
     Route,
@@ -23,8 +23,9 @@ import CreatePost from "./layout/create-post/CreatePost";
 import UserProfileDisplay from "./layout/profile-page/UserProfileDisplay";
 import PostsDisplay from "./layout/posts-display-page/PostsDisplay";
 import Messenger from "./layout/messages-page/Messenger";
+
 import socket from '../utils/socketConnection';
-import {nsConnection} from '../utils/nsConnection';
+
 
 let drawerWidth = 250;
 const useStyles = makeStyles((theme) => ({
@@ -59,7 +60,6 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-
 const App = (props) => {
     const {token, login, logout, userId} = useAuth();
     const theme = useTheme();
@@ -68,9 +68,8 @@ const App = (props) => {
     let routes;
 
     const [open, setOpen] = useState(false);
-    const [notificationSocket, setNotificationSocket] = useState(null);
-
-    let nsSocket;
+    const [notification, setNotification] = useState({});
+    const [initialNotifications, setInitialNotifications] = useState([]);
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -81,16 +80,20 @@ const App = (props) => {
     };
 
     useEffect(() => {
-        if(token) {
-            socket.emit('clientAuth', {token, userId});
+        if(token !== false && token !== null) {
+            socket.emit('clientAuth', {token});
 
-            socket.on('goodAuth', () => {
-                nsSocket = nsConnection('/notifications');
-                setNotificationSocket(nsSocket);
-            })
+            socket.on('getNotifications', (initialNotifications) => {
+                setInitialNotifications(initialNotifications);
+            });
         }
-    }, [token, userId]);
+    }, [token]);
 
+    useEffect (() => {
+        socket.on('newNotification', (notification) => {
+            setNotification(notification);
+        });
+    }, []);
 
     if (token) {
         routes = (
@@ -101,7 +104,7 @@ const App = (props) => {
             }} component="div" spacing={2} className={classes.root}>
                 <CssBaseline/>
                 <Grid item xs={12} lg={12} xl={12}>
-                    <NavBar handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} open={open}/>
+                    <NavBar notification={notification} initialNotifications={initialNotifications} handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} open={open}/>
                 </Grid>
                 <Grid item lg={3} xl={3}>
                     <SideNav handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} open={open}/>
@@ -112,7 +115,7 @@ const App = (props) => {
                     <div className={classes.drawerHeader}/>
                     <Switch>
                         <Route path="/" exact>
-                            <Dashboard notificationSocket={notificationSocket}/>
+                            <Dashboard notificationSocket={socket}/>
                         </Route>
 
                         <Route path="/user/edit" exact>
@@ -145,7 +148,12 @@ const App = (props) => {
             </Grid>
         );
     } else {
-        routes = (<Switch><Route path="/" exact> <SidePage/> </Route> </Switch>);
+        routes = (
+            <Switch>
+                <Route path="/" exact>
+                    <SidePage/>
+                </Route>
+            </Switch>);
     }
 
     return (
@@ -164,5 +172,6 @@ const App = (props) => {
         </AuthContext.Provider>
     )
 };
+
 
 export default App;

@@ -86,6 +86,7 @@ const PostItem = (props) => {
             );
             setLiked(true);
             props.notificationSocket.emit('addLike', {userId: auth.userId, postId: post.id});
+            console.log(props.notificationSocket.id);
         } else {
             try {
                 const response = await sendRequest(`http://localhost:5000/api/likes/${post.id}`,

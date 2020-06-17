@@ -5,6 +5,8 @@ import MessageItem from "./MessageItem";
 import {makeStyles} from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
 import ConversationItem from "./ConversationItem";
+import Button from "@material-ui/core/Button";
+import ListItem from "@material-ui/core/ListItem";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -25,7 +27,9 @@ const ConversationList = (props) => {
         <List className={classes.root}>
             {props.conversations.map((conversation) => (
                 <Grid item>
-                    <ConversationItem conversation={conversation}/>
+                    <ListItem onClick={() => props.handleConversationClick(conversation)} button>
+                        <ConversationItem conversation={conversation} getTitle={props.getTitle}/>
+                    </ListItem>
                 </Grid>
             ))}
         </List>

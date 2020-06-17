@@ -11,6 +11,7 @@ import {AuthContext} from "../../contexts/AuthContext";
 
 const Auth = () => {
     const auth = useContext(AuthContext);
+
     const {isLoading, error, sendRequest, clearError} = useHttpClient();
 
     const [isLoginMode, setIsLoginMode] = useState(true);
@@ -60,7 +61,7 @@ const Auth = () => {
 
     const authValidationSchema = yup.object({
         firstName: !isLoginMode && yup.string().required('First name is required'),
-        lastName: !isLoginMode && yup.string().required('First name is required'),
+        lastName: !isLoginMode && yup.string().required('Last name is required'),
         email: yup.string().email('Please provide a valid email address').required('Email is required'),
         password: yup.string().required('Password is required').min(6, 'Your password should have at least 6 characters')
     });
@@ -78,6 +79,7 @@ const Auth = () => {
             >
                 {props => <AuthForm {...props} onModeChange={handleModeChange} isLoginMode={isLoginMode}/>}
             </Formik>
+
         </React.Fragment>
     );
 };

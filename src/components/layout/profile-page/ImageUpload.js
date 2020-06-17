@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react'
+import React, {useCallback, useContext, useEffect, useState} from 'react'
 import {DropzoneDialog} from 'material-ui-dropzone'
 import Button from "@material-ui/core/Button";
 import {useTheme} from "@material-ui/core";
@@ -48,7 +48,7 @@ const ImageUpload = (props) => {
         setOpenDrawer(true);
     };
 
-    const handleSave = async (file) => {
+    const handleSave = useCallback(async (file) => {
         // file will be an array; access it with file[0]
         //Saving files to state for further use and closing Modal.
         const formData = new FormData();
@@ -71,7 +71,7 @@ const ImageUpload = (props) => {
             setProfilePicture(response.data);
         }
         setOpenDrawer(false);
-    };
+    }, [auth.token, sendRequest]);
 
     return (
         <Box m={2} className={classes.root}>

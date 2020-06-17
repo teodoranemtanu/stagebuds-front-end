@@ -31,16 +31,6 @@ const Profile = (props) => {
     const auth = useContext(AuthContext);
     const {sendRequest} = useHttpClient();
 
-    // const [displayData, setDisplayData] = useState({});
-    //
-    // const fetchedData = useDisplayProfileData(auth.userId);
-    //
-    // useEffect(() => {
-    //     console.log(fetchedData);
-    //     setDisplayData(fetchedData);
-    // }, [fetchedData]);
-    //
-
     const [profileData, setProfileData] = useState({});
     const [userData, setUserData] = useState({});
     const [displayData, setDisplayData] = useState({});

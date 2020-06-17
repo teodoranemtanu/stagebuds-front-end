@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -27,6 +27,8 @@ const NavBar = (props) => {
 
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+    const [notificationCount, setNotificationCount] = useState(0);
 
     const handleProfileMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -81,8 +83,8 @@ const NavBar = (props) => {
                 <p>Messages</p>
             </MenuItem>
             <MenuItem>
-                <IconButton aria-label="show 11 new notifications" color="inherit">
-                    <Badge badgeContent={11} color="secondary">
+                <IconButton aria-label="show new notifications" color="inherit">
+                    <Badge badgeContent={notificationCount} color="secondary">
                         <NotificationsIcon />
                     </Badge>
                 </IconButton>
@@ -101,6 +103,22 @@ const NavBar = (props) => {
             </MenuItem>
         </Menu>
     );
+
+    useEffect(() => {
+        let count = 0;
+        props.initialNotifications.forEach((notification) => {
+            if(notification.read === false)
+                count++;
+        });
+        setNotificationCount(count);
+    }, [props.initialNotifications]);
+    
+    useEffect(() => {
+       if(props.notification.read === false) {
+           setNotificationCount(notificationCount + 1);
+       }
+    }, [props.notification.read]);
+
 
     return (
         <div className={classes.grow}>
@@ -128,8 +146,10 @@ const NavBar = (props) => {
                                 <MailIcon />
                             </Badge>
                         </IconButton>
-                        <IconButton aria-label="show 17 new notifications" color="inherit">
-                            <Badge badgeContent={17} color="secondary">
+                        <IconButton aria-label="show new notifications" color="inherit">
+                            {/*{console.log(props.initialNotifications)}*/}
+                            {/*{console.log(props.notification)}*/}
+                            <Badge badgeContent={notificationCount} color="secondary">
                                 <NotificationsIcon />
                             </Badge>
                         </IconButton>

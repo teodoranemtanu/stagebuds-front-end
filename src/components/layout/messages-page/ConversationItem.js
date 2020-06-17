@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import Divider from "@material-ui/core/Divider";
 import Typography from "@material-ui/core/Typography";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -8,6 +8,7 @@ import ListItem from "@material-ui/core/ListItem";
 import {useTheme} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import red from "@material-ui/core/colors/red";
+import {AuthContext} from "../../../contexts/AuthContext";
 
 const useStyles = makeStyles((theme) => ({
     inline: {
@@ -21,37 +22,42 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+
 const ConversationItem = (props) => {
     const classes = useStyles(useTheme());
+    const auth = useContext(AuthContext);
+
+    const [conversationUser, setConversationUser] = useState({});
+
+    useEffect(() => {
+        console.log(props.conversation.user1._id, auth.userId);
+        if (props.conversation.user1._id === auth.userId) {
+            setConversationUser(props.conversation.user2);
+            console.log(conversationUser, 'user2');
+        } else {
+            setConversationUser(props.conversation.user1);
+            console.log(conversationUser, 'user1');
+        }
+        console.log(conversationUser);
+    }, [auth.userId, conversationUser, props.conversation.user1, props.conversation.user2]);
+
 
     return (
         <React.Fragment>
             <ListItem alignItems="flex-start">
                 <ListItemAvatar>
+                    { conversationUser.firstName !== undefined &&
                     <Avatar aria-label="avatar" className={classes.avatar}>
-                        {props.conversation.user1.profilePicture ? <img src={props.conversation.user1.profilePicture}
-                                                                    alt={props.conversation.user1.firstName.charAt(0)}/>
-                            : props.conversation.user1.firstName.charAt(0)}
-                    </Avatar>
+                        {conversationUser.profilePicture ? <img src={conversationUser.profilePicture}
+                                                 alt={conversationUser.firstName.charAt(0)}/>
+                            : conversationUser.firstName.charAt(0)}
+                    </Avatar>}
                 </ListItemAvatar>
-                <ListItemText
-                    primary={`${props.conversation.user1.firstName} ${props.conversation.user1.lastName}`}
-                    // secondary={
-                    //     <React.Fragment>
-                    //         <Typography
-                    //             component="span"
-                    //             variant="body2"
-                    //             className={classes.inline}
-                    //             color="textPrimary"
-                    //         >
-                    //             Ali Connors
-                    //         </Typography>
-                    //         {" — I'll be in your neighborhood doing errands this…"}
-                    //     </React.Fragment>
-                    // }
+                < ListItemText
+                    primary={props.getTitle(props.conversation)}
                 />
             </ListItem>
-            <Divider variant = "inset" component = "li" />
+            <Divider variant="inset" component="li"/>
         </React.Fragment>
     );
 };

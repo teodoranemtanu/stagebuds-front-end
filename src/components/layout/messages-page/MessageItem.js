@@ -47,11 +47,10 @@ const MessageItem = (props) => {
     const classes = useStyles(theme);
     const auth = useContext(AuthContext);
 
-    const isOwnerOfMessage = () => {
-        return auth.userId === props.message.sender.id
-    };
 
-    console.log(props.message.sender);
+    const isOwnerOfMessage = () => {
+        return auth.userId === props.message.sender;
+    };
 
     return (
         <React.Fragment>
@@ -66,22 +65,22 @@ const MessageItem = (props) => {
                 <CardHeader
                     avatar={
                         <Avatar aria-label="avatar" className={classes.avatar}>
-                            {props.message.sender.profilePicture ? <img src={props.message.sender.profilePicture}
-                                                                        alt={props.message.sender.firstName.charAt(0)}/>
-                                : props.message.sender.firstName.charAt(0)}
+                            {props.sender.profilePicture ? <img src={props.sender.profilePicture}
+                                                                        alt={props.sender.firstName.charAt(0)}/>
+                                : props.sender.firstName.charAt(0)}
                         </Avatar>
                     }
                     title={
                         <Typography variant="subtitle2" gutterBottom>
-                            {props.message.sender.firstName} {props.message.sender.lastName}
+                            {props.sender.firstName} {props.sender.lastName}
                         </Typography>
                     }
                     className={classes.padding}/>
-                {/*<CardContent className={classes.content}>*/}
+
                 <Typography variant="body2" component="p" className={classes.content}>
                     {props.message.text}
                 </Typography>
-                {/*</CardContent>*/}
+
             </Card>
         </React.Fragment>
     );

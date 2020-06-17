@@ -12,7 +12,6 @@ const signInText = "Already have an account? Sign in";
 
 const useStyles = makeStyles((theme) => ({
     form: {
-         // Fix IE 11 issue.
         marginTop: theme.spacing(2),
     },
     submit: {
@@ -101,16 +100,6 @@ const AuthForm = (props) => {
                 helperText={touched.lastName ? errors.lastName : ""}
                 error={touched.lastName && Boolean(errors.lastName)}
             />}
-            {/*{!isLoginMode &&*/}
-            {/*<MuiPickersUtilsProvider utils={DateFnsUtils}>*/}
-            {/*    <DatePicker*/}
-            {/*        label="Date of Birth"*/}
-            {/*        disableFuture*/}
-            {/*        format="dd/MM/yyyy"*/}
-            {/*        views={["year", "month", "date"]}*/}
-            {/*        onChange={handleChange}*/}
-            {/*    />*/}
-            {/*</MuiPickersUtilsProvider>}*/}
             {isLoginMode && <FormControlLabel
                 control={<Checkbox value="remember" color="primary"/>}
                 label="Remember me"

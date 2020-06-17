@@ -1,16 +1,15 @@
-import React from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
+import io from 'socket.io-client';
+import {Formik} from "formik";
 import MessageList from "./MessageList";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import {fade, makeStyles} from "@material-ui/core/styles";
 import {useTheme} from "@material-ui/core";
 import ConversationList from "./ConversationList";
-import {DUMMY_MESSAGES, DUMMY_CONVERSATIONS} from "./DummyData";
 import SearchBar from "../../shared/SearchBar";
-import TextField from "@material-ui/core/TextField";
-import SendIcon from '@material-ui/icons/Send';
-import InputAdornment from "@material-ui/core/InputAdornment";
-import io from 'socket.io-client';
+import {AuthContext} from "../../../contexts/AuthContext";
+import SendMessageInput from "./SendMessageInput";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -29,9 +28,9 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: 'rgba(0,0,0,.1)',
             outline: '1px solid slategrey'
         },
-        maxHeight: '30vw',
+        maxHeight: '25vw',
         width: '100%',
-        overflow: 'auto'
+        overflow: 'auto',
     },
     messageTitle: {
         position: 'fixed'
@@ -48,8 +47,69 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+const messagesSocket = io('http://localhost:5000/messenger');
+
 const Messenger = (props) => {
     const classes = useStyles(useTheme());
+    const auth = useContext(AuthContext);
+    const [conversations, setConversations] = useState([]);
+    const [currentConversation, setCurrentConversation] = useState(null);
+    const [currentMessages, setCurrentMessages] = useState([]);
+
+    useEffect(() => {
+        if (auth.token !== false && auth.token !== null) {
+            messagesSocket.emit('getUserData', {token: auth.token, userId: auth.userId});
+
+            messagesSocket.on('initialConversations', (conversations) => {
+                setConversations(conversations);
+                console.log(conversations);
+            });
+        }
+    }, [auth.token, auth.userId]);
+
+    const handleConversationClick = useCallback((conversation) => {
+        messagesSocket.emit('conversationData', conversation);
+        messagesSocket.on('getConversationData', (messages) => {
+            setCurrentMessages(messages);
+        });
+        setCurrentConversation(conversation);
+    }, []);
+
+    const handleMessageSubmit = (values) => {
+        let receiver, sender;
+        if (currentConversation.user1._id === auth.userId) {
+            receiver = currentConversation.user2._id;
+            sender = currentConversation.user1._id;
+        } else {
+            receiver = currentConversation.user1._id;
+            sender = currentConversation.user2._id;
+        }
+
+        const message = {
+            text: values.message,
+            sender: sender,
+            receiver: receiver,
+            timestamp: Date.now(),
+            conversation: currentConversation._id
+        };
+        messagesSocket.emit('sendMessage', message);
+        setCurrentMessages([...currentMessages, message]);
+    };
+
+    messagesSocket.on('newMessage', (message) => {
+        if (currentConversation !== null)
+            if (message.conversation === currentConversation._id) {
+                setCurrentMessages([...currentMessages, message]);
+            }
+    });
+
+    const getChatRoomTitle = (currentConversation) => {
+        if (currentConversation.user1._id === auth.userId) {
+            return `${currentConversation.user2.firstName} ${currentConversation.user2.lastName}`;
+        } else {
+            return `${currentConversation.user1.firstName} ${currentConversation.user1.lastName}`
+        }
+    };
 
     return (
         <Grid container spacing={3} className={classes.container}>
@@ -58,26 +118,26 @@ const Messenger = (props) => {
                     Past Conversations
                 </Typography>
                 <SearchBar placeholder="Search for users" classes={classes.search}/>
-                <ConversationList conversations={DUMMY_CONVERSATIONS}/>
+                {conversations.length !== 0 && <ConversationList conversations={conversations}
+                                                                 handleConversationClick={handleConversationClick}
+                                                                 getTitle={getChatRoomTitle}
+                />}
+
             </Grid>
 
             <Grid item xs={8} sm={8} md={8} lg={8} xl={8}>
                 <Typography variant="h6" className={classes.title}>
-                    Room title hardcoded for now
+                    {currentConversation && getChatRoomTitle(currentConversation)}
                 </Typography>
+
                 <div className={classes.list}>
-                    <MessageList messages={DUMMY_MESSAGES}/>
+                    <MessageList messages={currentMessages} conversation={currentConversation}/>
                 </div>
-                <TextField className={classes.messageInput} margin="normal"
-                           label="Type a message..." variant="outlined"
-                           InputProps={{
-                               endAdornment: (
-                                   <InputAdornment position="end">
-                                       <SendIcon/>
-                                   </InputAdornment>
-                               ),
-                           }}
-                />
+
+                <Formik initialValues={{message: ''}}
+                        onSubmit={values => handleMessageSubmit(values)}>
+                    {props => <SendMessageInput {...props} classes={classes.messageInput}/>}
+                </Formik>
             </Grid>
         </Grid>
     );
