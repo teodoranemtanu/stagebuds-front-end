@@ -4,12 +4,14 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import SendIcon from "@material-ui/icons/Send";
 import IconButton from "@material-ui/core/IconButton";
 
-const SendMessageInput = (props) => {
+const SingleInputForm = (props) => {
     const {
+        values,
         classes,
         handleChange,
         setFieldTouched,
-        handleSubmit
+        handleSubmit,
+        placeholderText
     } = props;
 
     const change = (name, e) => {
@@ -22,9 +24,10 @@ const SendMessageInput = (props) => {
         <form onSubmit={handleSubmit}>
             <TextField className={classes}
                        margin="normal"
-                       label="Type a message..."
+                       label={placeholderText}
                        variant="outlined"
                        name="message"
+                       value={values.message || ''}
                        onChange={change.bind(null, "message")}
                        InputProps={{
                            endAdornment: (
@@ -40,4 +43,4 @@ const SendMessageInput = (props) => {
     );
 };
 
-export default SendMessageInput;
+export default SingleInputForm;

@@ -1,20 +1,23 @@
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useRef, useState} from 'react';
 import io from 'socket.io-client';
 import {Formik} from "formik";
-import MessageList from "./MessageList";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
+import SingleInputForm from "./SingleInputForm";
+import Box from "@material-ui/core/Box";
 import {fade, makeStyles} from "@material-ui/core/styles";
 import {useTheme} from "@material-ui/core";
+import ScrollToBottom, {useScrollToBottom, useSticky} from 'react-scroll-to-bottom';
+
+import MessageList from "./MessageList";
 import ConversationList from "./ConversationList";
 import SearchBar from "../../shared/SearchBar";
 import {AuthContext} from "../../../contexts/AuthContext";
-import SendMessageInput from "./SendMessageInput";
 
 
 const useStyles = makeStyles((theme) => ({
     container: {
-        marginTop: theme.spacing(3),
+        marginTop: theme.spacing(3.2),
     },
     list: {
         '&::-webkit-scrollbar': {
@@ -28,12 +31,16 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: 'rgba(0,0,0,.1)',
             outline: '1px solid slategrey'
         },
-        maxHeight: '25vw',
+        height: '25vw',
         width: '100%',
         overflow: 'auto',
     },
     messageTitle: {
-        position: 'fixed'
+        margin: theme.spacing(4)
+    },
+    messagesBox: {
+        borderColor: theme.palette.primary.light,
+        border: 1,
     },
     search: {
         backgroundColor: fade(theme.palette.primary.main, 0.15),
@@ -55,6 +62,12 @@ const Messenger = (props) => {
     const [conversations, setConversations] = useState([]);
     const [currentConversation, setCurrentConversation] = useState(null);
     const [currentMessages, setCurrentMessages] = useState([]);
+    //
+    // const scrollToBottom = useScrollToBottom();
+    // const [sticky] = useSticky();
+    //
+    //
+    // useEffect(scrollToBottom, [currentMessages]);
 
     useEffect(() => {
         if (auth.token !== false && auth.token !== null) {
@@ -103,6 +116,16 @@ const Messenger = (props) => {
             }
     });
 
+    const handleNewConversation = (values) => {
+        messagesSocket.emit('newConversation', {firstUserName: values.message, secondUserId: auth.userId});
+    };
+
+    messagesSocket.on('getNewConversation', (newConversation) => {
+        console.log(newConversation);
+        setConversations([newConversation, ...conversations]);
+        setCurrentConversation(newConversation);
+    });
+
     const getChatRoomTitle = (currentConversation) => {
         if (currentConversation.user1._id === auth.userId) {
             return `${currentConversation.user2.firstName} ${currentConversation.user2.lastName}`;
@@ -113,31 +136,52 @@ const Messenger = (props) => {
 
     return (
         <Grid container spacing={3} className={classes.container}>
-            <Grid item xs={4} sm={4} md={4} lg={4} xl={4} className={classes.list}>
+            <Grid item xs={4} sm={4} md={4} lg={4} xl={4}>
                 <Typography variant="h6" className={classes.title}>
                     Past Conversations
                 </Typography>
-                <SearchBar placeholder="Search for users" classes={classes.search}/>
-                {conversations.length !== 0 && <ConversationList conversations={conversations}
-                                                                 handleConversationClick={handleConversationClick}
-                                                                 getTitle={getChatRoomTitle}
-                />}
-
+                <SearchBar placeholder="Search for existing chat" classes={classes.search}/>
+                <div className={classes.list}>
+                    {conversations.length !== 0 && <ConversationList
+                        conversations={conversations}
+                        handleConversationClick={handleConversationClick}
+                        getTitle={getChatRoomTitle}
+                    />}
+                </div>
+                <Formik initialValues={{message: ''}}
+                        onSubmit={(values, {resetForm}) => {
+                            handleNewConversation(values);
+                            resetForm();
+                        }}>
+                    {props => <SingleInputForm {...props}
+                                               classes={classes.messageInput}
+                                               placeholderText="Start new conversation..."/>}
+                </Formik>
             </Grid>
 
             <Grid item xs={8} sm={8} md={8} lg={8} xl={8}>
-                <Typography variant="h6" className={classes.title}>
-                    {currentConversation && getChatRoomTitle(currentConversation)}
-                </Typography>
+                <Box className={classes.messageTitle}>
+                    <Typography variant="h6">
+                        {currentConversation && getChatRoomTitle(currentConversation)}
+                    </Typography>
+                </Box>
 
-                <div className={classes.list}>
+                <ScrollToBottom className={classes.list}>
+                    {currentMessages.length === 0 && currentConversation &&
+                    <Typography variant="h6">
+                        You don't have any messages with this user yet.
+                    </Typography>}
                     <MessageList messages={currentMessages} conversation={currentConversation}/>
-                </div>
+                </ScrollToBottom>
 
-                <Formik initialValues={{message: ''}}
-                        onSubmit={values => handleMessageSubmit(values)}>
-                    {props => <SendMessageInput {...props} classes={classes.messageInput}/>}
-                </Formik>
+                {currentConversation && <Formik initialValues={{message: ''}}
+                                                onSubmit={(values, {resetForm}) => {
+                                                    handleMessageSubmit(values);
+                                                    resetForm();
+                                                }}>
+                    {props => <SingleInputForm {...props} classes={classes.messageInput}
+                                               placeholderText="Type a message..."/>}
+                </Formik>}
             </Grid>
         </Grid>
     );

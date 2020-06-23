@@ -4,16 +4,16 @@ export const Buttons = [
         action: 'FEED',
         link: '/'
     },
-    // {
-    //     label: 'Future Concerts',
-    //     action: 'FUTURE_CONCERTS',
-    //     link: '/user/future-concerts'
-    // },
-    // {
-    //     label: 'Your Concerts',
-    //     action: 'YOUR_CONCERTS',
-    //     link: '/user/concerts'
-    // },
+    {
+        label: 'Future Concerts',
+        action: 'FUTURE_CONCERTS',
+        link: '/concerts'
+    },
+    {
+        label: 'Saved Posts',
+        action: 'SAVED_POSTS',
+        link: '/user/saved'
+    },
     {
         label: 'Create a post',
         action: 'CREATE_POST',

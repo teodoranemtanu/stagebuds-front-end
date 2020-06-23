@@ -17,11 +17,15 @@ import clsx from "clsx";
 import {AuthContext} from "../../contexts/AuthContext";
 import {useStyles} from './NavBarStyle';
 import SearchBar from "../shared/SearchBar";
+import Dialog from "@material-ui/core/Dialog";
+import NotificationList from "../shared/NotificationList";
+import {useHttpClient} from "../../hooks/http-hook";
 
 const NavBar = (props) => {
     const theme = useTheme();
     const classes = useStyles(theme);
     const auth = useContext(AuthContext);
+    const {sendRequest} = useHttpClient();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -29,6 +33,8 @@ const NavBar = (props) => {
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
     const [notificationCount, setNotificationCount] = useState(0);
+    const [notificationAnchor, setNotificationAnchor] = useState(null);
+    const [notificationDisplay, setNotificationDisplay] = useState(null);
 
     const handleProfileMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -43,18 +49,49 @@ const NavBar = (props) => {
         handleMobileMenuClose();
     };
 
+    const handleNotificationOpen = (event) => {
+        setNotificationAnchor(event.currentTarget);
+    };
+
+    const handleNotificationClose = async () => {
+        setNotificationAnchor(null);
+        setNotificationCount(0);
+
+        const response = await sendRequest(`http://localhost:5000/api/notifications/`,
+            'PUT', JSON.stringify(
+                props.initialNotifications), {
+                "Content-Type": 'application/json',
+                "Authorization": 'Bearer: ' + auth.token
+            });
+    };
+
+
     const handleMobileMenuOpen = (event) => {
         setMobileMoreAnchorEl(event.currentTarget);
     };
+
+
+    const renderNotifications = (
+        <Menu
+            anchorEl={notificationAnchor}
+            anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+            keepMounted
+            transformOrigin={{vertical: 'top', horizontal: 'right'}}
+            open={notificationAnchor}
+            onClose={handleNotificationClose}
+        >
+            <NotificationList notifications={notificationDisplay}/>
+        </Menu>
+    );
 
     const menuId = 'primary-search-account-menu';
     const renderMenu = (
         <Menu
             anchorEl={anchorEl}
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            anchorOrigin={{vertical: 'top', horizontal: 'right'}}
             id={menuId}
             keepMounted
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            transformOrigin={{vertical: 'top', horizontal: 'right'}}
             open={isMenuOpen}
             onClose={handleMenuClose}
         >
@@ -67,17 +104,17 @@ const NavBar = (props) => {
     const renderMobileMenu = (
         <Menu
             anchorEl={mobileMoreAnchorEl}
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            anchorOrigin={{vertical: 'top', horizontal: 'right'}}
             id={mobileMenuId}
             keepMounted
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            transformOrigin={{vertical: 'top', horizontal: 'right'}}
             open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
         >
             <MenuItem>
                 <IconButton aria-label="show 4 new mails" color="inherit">
                     <Badge badgeContent={4} color="secondary">
-                        <MailIcon />
+                        <MailIcon/>
                     </Badge>
                 </IconButton>
                 <p>Messages</p>
@@ -85,7 +122,7 @@ const NavBar = (props) => {
             <MenuItem>
                 <IconButton aria-label="show new notifications" color="inherit">
                     <Badge badgeContent={notificationCount} color="secondary">
-                        <NotificationsIcon />
+                        <NotificationsIcon/>
                     </Badge>
                 </IconButton>
                 <p>Notifications</p>
@@ -97,7 +134,7 @@ const NavBar = (props) => {
                     aria-haspopup="true"
                     color="inherit"
                 >
-                    <AccountCircle />
+                    <AccountCircle/>
                 </IconButton>
                 <p>Profile</p>
             </MenuItem>
@@ -107,17 +144,20 @@ const NavBar = (props) => {
     useEffect(() => {
         let count = 0;
         props.initialNotifications.forEach((notification) => {
-            if(notification.read === false)
+            if (notification.read === false)
                 count++;
         });
+        setNotificationDisplay(props.initialNotifications);
         setNotificationCount(count);
     }, [props.initialNotifications]);
-    
+
     useEffect(() => {
-       if(props.notification.read === false) {
-           setNotificationCount(notificationCount + 1);
-       }
-    }, [props.notification.read]);
+        if (props.notification.read === false) {
+            setNotificationCount(notificationCount + 1);
+        }
+        notificationDisplay && setNotificationDisplay(
+            [...notificationDisplay, props.notification]);
+    }, [props.notification]);
 
 
     return (
@@ -133,24 +173,23 @@ const NavBar = (props) => {
                         onClick={props.handleDrawerOpen}
                         className={clsx(classes.menuButton, props.open && classes.hide)}
                     >
-                        <MenuIcon />
+                        <MenuIcon/>
                     </IconButton>
                     <Typography className={classes.title} variant="h6" noWrap>
                         StageBuds
                     </Typography>
                     <SearchBar placeholder="Search user or concerts" classes={classes.search}/>
-                    <div className={classes.grow} />
+                    <div className={classes.grow}/>
                     <div className={classes.sectionDesktop}>
                         <IconButton aria-label="show 4 new mails" color="inherit">
                             <Badge badgeContent={4} color="secondary">
-                                <MailIcon />
+                                <MailIcon/>
                             </Badge>
                         </IconButton>
-                        <IconButton aria-label="show new notifications" color="inherit">
-                            {/*{console.log(props.initialNotifications)}*/}
-                            {/*{console.log(props.notification)}*/}
+                        <IconButton aria-label="show new notifications" color="inherit"
+                                    onClick={handleNotificationOpen}>
                             <Badge badgeContent={notificationCount} color="secondary">
-                                <NotificationsIcon />
+                                <NotificationsIcon/>
                             </Badge>
                         </IconButton>
                         <IconButton
@@ -161,7 +200,7 @@ const NavBar = (props) => {
                             onClick={handleProfileMenuOpen}
                             color="inherit"
                         >
-                            <AccountCircle />
+                            <AccountCircle/>
                         </IconButton>
                     </div>
                     <div className={classes.sectionMobile}>
@@ -172,13 +211,14 @@ const NavBar = (props) => {
                             onClick={handleMobileMenuOpen}
                             color="inherit"
                         >
-                            <MoreIcon />
+                            <MoreIcon/>
                         </IconButton>
                     </div>
                 </Toolbar>
             </AppBar>
             {renderMobileMenu}
             {renderMenu}
+            {renderNotifications}
         </div>
     );
 };

@@ -19,6 +19,13 @@ import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
 import DeleteDialog from "./DeleteDialog";
 import EditDialog from "./EditDialog";
+import Divider from "@material-ui/core/Divider";
+import MapIcon from '@material-ui/icons/Map';
+import MapComponent from "./MapComponent";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import Dialog from "@material-ui/core/Dialog";
+import './mapStyle.css';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -36,8 +43,13 @@ const useStyles = makeStyles((theme) => ({
     },
     button: {
         margin: theme.spacing(1)
-    }
+    },
+    locationBox: {
+        display: 'flex'
+    },
 }));
+
+const options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
 
 const PostItem = (props) => {
     const theme = useTheme();
@@ -52,6 +64,7 @@ const PostItem = (props) => {
     const [liked, setLiked] = useState(false);
     const [deleteDialog, setDeleteDialog] = useState(false);
     const [editDialog, setEditDialog] = useState(false);
+    const [mapDialog, setMapDialog] = useState(false);
 
     useEffect(() => {
         const getPostLike = async () => {
@@ -61,7 +74,6 @@ const PostItem = (props) => {
                     {
                         "Authorization": 'Bearer: ' + auth.token
                     });
-                console.log(response);
                 setLiked(response.liked);
             } catch (e) {
                 console.log(e);
@@ -86,7 +98,6 @@ const PostItem = (props) => {
             );
             setLiked(true);
             props.notificationSocket.emit('addLike', {userId: auth.userId, postId: post.id});
-            console.log(props.notificationSocket.id);
         } else {
             try {
                 const response = await sendRequest(`http://localhost:5000/api/likes/${post.id}`,
@@ -106,6 +117,13 @@ const PostItem = (props) => {
     };
     const handleEdit = () => {
         setEditDialog(true);
+    };
+    const handleMap = () => {
+        setMapDialog(true);
+    };
+
+    const handleMapClose = () => {
+        setMapDialog(false);
     };
 
     const postActions = () => {
@@ -147,20 +165,57 @@ const PostItem = (props) => {
                     </Avatar>
                 }
                 title={
-                    <Typography variant="h6" gutterBottom>
-                        {post.concertDetails.title} on {concertDate.toDateString()}
+                    <Typography variant="h6">
+                        {post.concertDetails.title}
                     </Typography>
                 }
                 subheader={
                     <Typography variant="overline" gutterBottom>
                         <Link href={`/profile/${post.author.id}`}>
-                            posted by {post.author.firstName} {post.author.lastName} on {postTimestamp.toDateString()}
+                            posted
+                            by {post.author.firstName} {post.author.lastName}
+                            on {postTimestamp.toLocaleDateString(undefined, options)}
                         </Link>
                     </Typography>
                 }
             />
             <CardContent>
-                <Typography variant="body2" color="textSecondary" component="p">
+                <Typography variant="subtitle2" color="textPrimary" component="p">
+                    Band:
+                </Typography>
+                <Typography variant="body2" color="textPrimary" component="p" gutterBottom paragraph>
+                    {post.concertDetails.band}
+                </Typography>
+                <Typography variant="subtitle2" color="textPrimary" component="p">
+                    Date:
+                </Typography>
+                <Typography variant="body2" color="textPrimary" component="p" gutterBottom paragraph>
+                    {concertDate.toLocaleDateString(undefined, options)}
+                </Typography>
+                <Divider/>
+                <br/>
+                <Box className={classes.locationBox}>
+                    <Box>
+                        <Typography variant="subtitle2" color="textPrimary" component="p">
+                            Location:
+                        </Typography>
+                        <Typography variant="body2" color="textPrimary" component="p" gutterBottom paragraph>
+                            {post.concertDetails.location}
+                        </Typography>
+                        <Divider/>
+                        <br/>
+                    </Box>
+                    <Box>
+                        <IconButton variant="outlined" color="primary" className={classes.button}
+                                    onClick={handleMap}>
+                            <MapIcon/>
+                        </IconButton>
+                    </Box>
+                </Box>
+                <Typography variant="subtitle2" color="textPrimary" component="p">
+                    Description:
+                </Typography>
+                <Typography variant="body2" color="textPrimary" component="p" gutterBottom paragraph>
                     {post.description}
                 </Typography>
             </CardContent>
@@ -175,6 +230,20 @@ const PostItem = (props) => {
                 <EditDialog setEditDialog={setEditDialog} open={editDialog}
                             editPost={props.editPost} post={post}
                 />}
+                {mapDialog &&
+                <Dialog
+                    className={classes.mapDialog}
+                    open={mapDialog}
+                    onClose={handleMapClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">{"Show on map"}</DialogTitle>
+                    <DialogContent className="map-container">
+                        <MapComponent center={post.concertDetails.coordinates} zoom={14}/>
+                    </DialogContent>
+                </Dialog>
+                }
             </CardActions>
         </Card>
     );

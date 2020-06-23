@@ -6,7 +6,6 @@ import {
     Switch,
     useParams
 } from "react-router-dom";
-
 import SidePage from './layout/side-page/SidePage';
 import {useAuth} from "../hooks/auth-hook";
 import {AuthContext} from "../contexts/AuthContext";
@@ -25,6 +24,8 @@ import PostsDisplay from "./layout/posts-display-page/PostsDisplay";
 import Messenger from "./layout/messages-page/Messenger";
 
 import socket from '../utils/socketConnection';
+import ConcertsDashboard from "./layout/concerts-page/ConcertsDashboard";
+import SavedPosts from "./layout/saved-posts-page/SavedPosts";
 
 
 let drawerWidth = 250;
@@ -80,7 +81,7 @@ const App = (props) => {
     };
 
     useEffect(() => {
-        if(token !== false && token !== null) {
+        if (token !== false && token !== null) {
             socket.emit('clientAuth', {token});
 
             socket.on('getNotifications', (initialNotifications) => {
@@ -89,11 +90,11 @@ const App = (props) => {
         }
     }, [token]);
 
-    useEffect (() => {
-        socket.on('newNotification', (notification) => {
-            setNotification(notification);
-        });
-    }, []);
+    socket.on('newNotification', (notification) => {
+        console.log(notification);
+        setNotification(notification);
+    });
+
 
     if (token) {
         routes = (
@@ -104,7 +105,8 @@ const App = (props) => {
             }} component="div" spacing={2} className={classes.root}>
                 <CssBaseline/>
                 <Grid item xs={12} lg={12} xl={12}>
-                    <NavBar notification={notification} initialNotifications={initialNotifications} handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} open={open}/>
+                    <NavBar notification={notification} initialNotifications={initialNotifications}
+                            handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} open={open}/>
                 </Grid>
                 <Grid item lg={3} xl={3}>
                     <SideNav handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} open={open}/>
@@ -118,8 +120,12 @@ const App = (props) => {
                             <Dashboard notificationSocket={socket}/>
                         </Route>
 
-                        <Route path="/user/edit" exact>
-                            <div>edit user</div>
+                        <Route path="/concerts" exact>
+                            <ConcertsDashboard/>
+                        </Route>
+
+                        <Route path="/user/saved" exact>
+                            <SavedPosts/>
                         </Route>
 
                         <Route path="/user/profile" exact>
