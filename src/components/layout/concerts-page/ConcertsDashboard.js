@@ -74,6 +74,7 @@ const ConcertsDashboard = (props) => {
                     "Authorization": 'Bearer: ' + auth.token
                 }
             );
+            console.log(response);
             setProfileConcertData(response.concerts);
         } catch (err) {
             console.log(err);

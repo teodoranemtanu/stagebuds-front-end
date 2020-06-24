@@ -6,6 +6,7 @@ import {useHttpClient} from "../../../hooks/http-hook";
 const Dashboard = (props) => {
     const auth = useContext(AuthContext);
     const [posts, setPosts] = useState([]);
+    const [savedPosts, setSavedPosts] = useState(null);
     const {sendRequest} = useHttpClient();
 
     useEffect(() => {
@@ -21,11 +22,26 @@ const Dashboard = (props) => {
                 console.log(err);
             }
         };
+        const getSavedPosts = async () => {
+            try {
+                const response = await sendRequest(`http://localhost:5000/api/users/user/saved`,
+                    'GET', null, {
+                    "Authorization": 'Bearer: ' + auth.token
+                });
+                setSavedPosts(response.savedPosts);
+                console.log(response)
+            } catch (err) {
+                console.log(err);
+            }
+        };
         getUserPosts();
+        getSavedPosts();
     }, [auth.token, sendRequest]);
 
     return (
-        <PostList notificationSocket={props.notificationSocket} posts={posts}/>
+        <React.Fragment>
+            {savedPosts && <PostList notificationSocket={props.notificationSocket} posts={posts} savedPosts={savedPosts}/>}
+        </React.Fragment>
     );
 };
 

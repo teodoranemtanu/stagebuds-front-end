@@ -26,6 +26,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Dialog from "@material-ui/core/Dialog";
 import './mapStyle.css';
+import PostDataDisplay from "./PostDataDisplay";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -49,19 +50,20 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
+// const options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
 
 const PostItem = (props) => {
     const theme = useTheme();
     const classes = useStyles(theme);
     const post = props.postDetails;
-    const postTimestamp = new Date(post.timestamp);
-    const concertDate = new Date(post.concertDetails.date);
+    // const postTimestamp = new Date(post.timestamp);
+    // const concertDate = new Date(post.concertDetails.date);
 
     const {sendRequest} = useHttpClient();
     const auth = useContext(AuthContext);
 
     const [liked, setLiked] = useState(false);
+    const [saved, setSaved] = useState(false);
     const [deleteDialog, setDeleteDialog] = useState(false);
     const [editDialog, setEditDialog] = useState(false);
     const [mapDialog, setMapDialog] = useState(false);
@@ -80,7 +82,8 @@ const PostItem = (props) => {
             }
         };
         getPostLike();
-    }, [auth.token, post.id, sendRequest]);
+        setSaved(props.saved);
+    }, [auth.token, post.id, props.saved, sendRequest]);
 
     const handleLikeEvent = async () => {
         if (liked === false) {
@@ -111,7 +114,6 @@ const PostItem = (props) => {
             }
         }
     };
-
     const handleDelete = () => {
         setDeleteDialog(true);
     };
@@ -124,6 +126,38 @@ const PostItem = (props) => {
 
     const handleMapClose = () => {
         setMapDialog(false);
+    };
+
+    const handleSaveEvent = async () => {
+        if (saved === false) {
+            const responseData = await sendRequest(
+                'http://localhost:5000/api/users/savePost',
+                'POST',
+                JSON.stringify({
+                    postId: post._id
+                }), {
+                    "Content-Type": 'application/json',
+                    "Authorization": 'Bearer: ' + auth.token
+                }
+            );
+            console.log(responseData);
+            setSaved(true);
+        } else {
+            try {
+                const response = await sendRequest('http://localhost:5000/api/users/unSavePost',
+                    'POST',
+                    JSON.stringify({
+                        postId: post.id
+                    }), {
+                        "Content-Type": 'application/json',
+                        "Authorization": 'Bearer: ' + auth.token
+                    });
+                setSaved(false);
+                console.log(response);
+            } catch (e) {
+                console.log(e);
+            }
+        }
     };
 
     const postActions = () => {
@@ -144,9 +178,9 @@ const PostItem = (props) => {
                     })}>
                         <FavoriteIcon/>
                     </IconButton>
-                    <IconButton aria-label="share" onClick={() => {
-                        alert('SHARE!')
-                    }}>
+                    <IconButton aria-label="share" className={clsx({
+                        [classes.liked]: saved,
+                    })} onClick={handleSaveEvent}>
                         <ShareIcon/>
                     </IconButton>
                 </Box>
@@ -156,69 +190,69 @@ const PostItem = (props) => {
 
     return (
         <Card className={classes.root}>
-            <CardHeader
-                avatar={
-                    <Avatar aria-label="avatar" className={classes.avatar}>
-                        {post.author.profilePicture ? <img src={post.author.profilePicture}
-                                                           alt={post.author.firstName.charAt(0)}/>
-                            : post.author.firstName.charAt(0)}
-                    </Avatar>
-                }
-                title={
-                    <Typography variant="h6">
-                        {post.concertDetails.title}
-                    </Typography>
-                }
-                subheader={
-                    <Typography variant="overline" gutterBottom>
-                        <Link href={`/profile/${post.author.id}`}>
-                            posted
-                            by {post.author.firstName} {post.author.lastName}
-                            on {postTimestamp.toLocaleDateString(undefined, options)}
-                        </Link>
-                    </Typography>
-                }
-            />
-            <CardContent>
-                <Typography variant="subtitle2" color="textPrimary" component="p">
-                    Band:
-                </Typography>
-                <Typography variant="body2" color="textPrimary" component="p" gutterBottom paragraph>
-                    {post.concertDetails.band}
-                </Typography>
-                <Typography variant="subtitle2" color="textPrimary" component="p">
-                    Date:
-                </Typography>
-                <Typography variant="body2" color="textPrimary" component="p" gutterBottom paragraph>
-                    {concertDate.toLocaleDateString(undefined, options)}
-                </Typography>
-                <Divider/>
-                <br/>
-                <Box className={classes.locationBox}>
-                    <Box>
-                        <Typography variant="subtitle2" color="textPrimary" component="p">
-                            Location:
-                        </Typography>
-                        <Typography variant="body2" color="textPrimary" component="p" gutterBottom paragraph>
-                            {post.concertDetails.location}
-                        </Typography>
-                        <Divider/>
-                        <br/>
-                    </Box>
-                    <Box>
-                        <IconButton variant="outlined" color="primary" className={classes.button}
-                                    onClick={handleMap}>
-                            <MapIcon/>
-                        </IconButton>
-                    </Box>
-                </Box>
-                <Typography variant="subtitle2" color="textPrimary" component="p">
-                    Description:
-                </Typography>
-                <Typography variant="body2" color="textPrimary" component="p" gutterBottom paragraph>
-                    {post.description}
-                </Typography>
-            </CardContent>
+            <PostDataDisplay post={post} handleMap={handleMap} mapMode={true}/>
+            {/*<CardHeader*/}
+            {/*    avatar={*/}
+            {/*        <Avatar aria-label="avatar" className={classes.avatar}>*/}
+            {/*            {post.author.profilePicture ? <img src={post.author.profilePicture}*/}
+            {/*                                               alt={post.author.firstName.charAt(0)}/>*/}
+            {/*                : post.author.firstName.charAt(0)}*/}
+            {/*        </Avatar>*/}
+            {/*    }*/}
+            {/*    title={*/}
+            {/*        <Typography variant="h6">*/}
+            {/*            {post.concertDetails.title}*/}
+            {/*        </Typography>*/}
+            {/*    }*/}
+            {/*    subheader={*/}
+            {/*        <Typography variant="overline" gutterBottom>*/}
+            {/*            <Link href={`/profile/${post.author.id}`}>*/}
+            {/*                posted*/}
+            {/*                by {post.author.firstName} {post.author.lastName } on {postTimestamp.toLocaleDateString(undefined, options)}*/}
+            {/*            </Link>*/}
+            {/*        </Typography>*/}
+            {/*    }*/}
+            {/*/>*/}
+            {/*<CardContent>*/}
+            {/*    <Typography variant="subtitle2" color="textPrimary" component="p">*/}
+            {/*        Band:*/}
+            {/*    </Typography>*/}
+            {/*    <Typography variant="body2" color="textPrimary" component="p" gutterBottom paragraph>*/}
+            {/*        {post.concertDetails.band}*/}
+            {/*    </Typography>*/}
+            {/*    <Typography variant="subtitle2" color="textPrimary" component="p">*/}
+            {/*        Date:*/}
+            {/*    </Typography>*/}
+            {/*    <Typography variant="body2" color="textPrimary" component="p" gutterBottom paragraph>*/}
+            {/*        {concertDate.toLocaleDateString(undefined, options)}*/}
+            {/*    </Typography>*/}
+            {/*    <Divider/>*/}
+            {/*    <br/>*/}
+            {/*    <Box className={classes.locationBox}>*/}
+            {/*        <Box>*/}
+            {/*            <Typography variant="subtitle2" color="textPrimary" component="p">*/}
+            {/*                Location:*/}
+            {/*            </Typography>*/}
+            {/*            <Typography variant="body2" color="textPrimary" component="p" gutterBottom paragraph>*/}
+            {/*                {post.concertDetails.location}*/}
+            {/*            </Typography>*/}
+            {/*            <Divider/>*/}
+            {/*            <br/>*/}
+            {/*        </Box>*/}
+            {/*        <Box>*/}
+            {/*            <IconButton variant="outlined" color="primary" className={classes.button}*/}
+            {/*                        onClick={handleMap}>*/}
+            {/*                <MapIcon/>*/}
+            {/*            </IconButton>*/}
+            {/*        </Box>*/}
+            {/*    </Box>*/}
+            {/*    <Typography variant="subtitle2" color="textPrimary" component="p">*/}
+            {/*        Description:*/}
+            {/*    </Typography>*/}
+            {/*    <Typography variant="body2" color="textPrimary" component="p" gutterBottom paragraph>*/}
+            {/*        {post.description}*/}
+            {/*    </Typography>*/}
+            {/*</CardContent>*/}
             <CardActions disableSpacing>
                 {postActions()}
                 {deleteDialog &&

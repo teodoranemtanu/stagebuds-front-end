@@ -62,12 +62,6 @@ const Messenger = (props) => {
     const [conversations, setConversations] = useState([]);
     const [currentConversation, setCurrentConversation] = useState(null);
     const [currentMessages, setCurrentMessages] = useState([]);
-    //
-    // const scrollToBottom = useScrollToBottom();
-    // const [sticky] = useSticky();
-    //
-    //
-    // useEffect(scrollToBottom, [currentMessages]);
 
     useEffect(() => {
         if (auth.token !== false && auth.token !== null) {
