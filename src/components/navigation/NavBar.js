@@ -8,7 +8,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import {useTheme} from "@material-ui/core";
@@ -16,16 +15,17 @@ import clsx from "clsx";
 
 import {AuthContext} from "../../contexts/AuthContext";
 import {useStyles} from './NavBarStyle';
-import SearchBar from "../shared/SearchBar";
-import Dialog from "@material-ui/core/Dialog";
 import NotificationList from "../shared/NotificationList";
 import {useHttpClient} from "../../hooks/http-hook";
+import SingleInputForm from "../layout/messages-page/SingleInputForm";
+import {Formik} from "formik";
+import Redirect from "react-router-dom/es/Redirect";
 
 const NavBar = (props) => {
     const theme = useTheme();
     const classes = useStyles(theme);
     const auth = useContext(AuthContext);
-    const {sendRequest} = useHttpClient();
+    const {sendRequest, isLoading} = useHttpClient();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -35,6 +35,8 @@ const NavBar = (props) => {
     const [notificationCount, setNotificationCount] = useState(0);
     const [notificationAnchor, setNotificationAnchor] = useState(null);
     const [notificationDisplay, setNotificationDisplay] = useState(null);
+    const [redirect, setRedirect] = useState(false);
+    const [searchResults, setSearchResults] = useState([]);
 
     const handleProfileMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -65,6 +67,20 @@ const NavBar = (props) => {
             });
     };
 
+    const handleSearchSubmit = async (values) => {
+        let response = null;
+        response = await sendRequest(`http://localhost:5000/api/users/search/`,
+            'POST', JSON.stringify({
+                value: values.message
+            }), {
+                "Content-Type": 'application/json',
+                "Authorization": 'Bearer: ' + auth.token
+            });
+        setSearchResults(response.searchResults);
+        if(response){
+            setRedirect(true);
+        }
+    };
 
     const handleMobileMenuOpen = (event) => {
         setMobileMoreAnchorEl(event.currentTarget);
@@ -95,8 +111,8 @@ const NavBar = (props) => {
             open={isMenuOpen}
             onClose={handleMenuClose}
         >
-            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-            <MenuItem onClick={auth.logout}>Logout</MenuItem>
+            <MenuItem onClick={handleMenuClose} component='a' href='/user/profile'>Profile</MenuItem>
+            <MenuItem component="a" href='/' onClick={auth.logout}>Logout</MenuItem>
         </Menu>
     );
 
@@ -111,14 +127,14 @@ const NavBar = (props) => {
             open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
         >
-            <MenuItem>
-                <IconButton aria-label="show 4 new mails" color="inherit">
-                    <Badge badgeContent={4} color="secondary">
-                        <MailIcon/>
-                    </Badge>
-                </IconButton>
-                <p>Messages</p>
-            </MenuItem>
+            {/*<MenuItem>*/}
+            {/*    <IconButton aria-label="show 4 new mails" color="inherit">*/}
+            {/*        <Badge badgeContent={4} color="secondary">*/}
+            {/*            <MailIcon/>*/}
+            {/*        </Badge>*/}
+            {/*    </IconButton>*/}
+            {/*    <p>Messages</p>*/}
+            {/*</MenuItem>*/}
             <MenuItem>
                 <IconButton aria-label="show new notifications" color="inherit">
                     <Badge badgeContent={notificationCount} color="secondary">
@@ -161,65 +177,78 @@ const NavBar = (props) => {
 
 
     return (
-        <div className={classes.grow}>
-            <AppBar position="fixed" className={clsx(classes.appBar, {
-                [classes.appBarShift]: props.open,
-            })}>
-                <Toolbar>
-                    <IconButton
-                        edge="start"
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={props.handleDrawerOpen}
-                        className={clsx(classes.menuButton, props.open && classes.hide)}
-                    >
-                        <MenuIcon/>
-                    </IconButton>
-                    <Typography className={classes.title} variant="h6" noWrap>
-                        StageBuds
-                    </Typography>
-                    <SearchBar placeholder="Search user or concerts" classes={classes.search}/>
-                    <div className={classes.grow}/>
-                    <div className={classes.sectionDesktop}>
-                        <IconButton aria-label="show 4 new mails" color="inherit">
-                            <Badge badgeContent={4} color="secondary">
-                                <MailIcon/>
-                            </Badge>
-                        </IconButton>
-                        <IconButton aria-label="show new notifications" color="inherit"
-                                    onClick={handleNotificationOpen}>
-                            <Badge badgeContent={notificationCount} color="secondary">
-                                <NotificationsIcon/>
-                            </Badge>
-                        </IconButton>
+        <React.Fragment>
+            <div className={classes.grow}>
+                <AppBar position="fixed" className={clsx(classes.appBar, {
+                    [classes.appBarShift]: props.open,
+                })}>
+                    <Toolbar>
                         <IconButton
-                            edge="end"
-                            aria-label="account of current user"
-                            aria-controls={menuId}
-                            aria-haspopup="true"
-                            onClick={handleProfileMenuOpen}
+                            edge="start"
                             color="inherit"
+                            aria-label="open drawer"
+                            onClick={props.handleDrawerOpen}
+                            className={clsx(classes.menuButton, props.open && classes.hide)}
                         >
-                            <AccountCircle/>
+                            <MenuIcon/>
                         </IconButton>
-                    </div>
-                    <div className={classes.sectionMobile}>
-                        <IconButton
-                            aria-label="show more"
-                            aria-controls={mobileMenuId}
-                            aria-haspopup="true"
-                            onClick={handleMobileMenuOpen}
-                            color="inherit"
-                        >
-                            <MoreIcon/>
-                        </IconButton>
-                    </div>
-                </Toolbar>
-            </AppBar>
-            {renderMobileMenu}
-            {renderMenu}
-            {renderNotifications}
-        </div>
+                        <Typography className={classes.title} variant="h6" noWrap>
+                            StageBuds
+                        </Typography>
+                        <Formik initialValues={{message: ''}}
+                                onSubmit={(values, {resetForm}) => {
+                                    handleSearchSubmit(values);
+                                    resetForm();
+                                }}>
+                            {props => <SingleInputForm {...props} classes={classes.search}
+                                                       placeholderText="Search for user"/>}
+                        </Formik>
+                        <div className={classes.grow}/>
+                        <div className={classes.sectionDesktop}>
+                            {/*<IconButton aria-label="show 4 new mails" color="inherit">*/}
+                            {/*    <Badge badgeContent={4} color="secondary">*/}
+                            {/*        <MailIcon/>*/}
+                            {/*    </Badge>*/}
+                            {/*</IconButton>*/}
+                            <IconButton aria-label="show new notifications" color="inherit"
+                                        onClick={handleNotificationOpen}>
+                                <Badge badgeContent={notificationCount} color="secondary">
+                                    <NotificationsIcon/>
+                                </Badge>
+                            </IconButton>
+                            <IconButton
+                                edge="end"
+                                aria-label="account of current user"
+                                aria-controls={menuId}
+                                aria-haspopup="true"
+                                onClick={handleProfileMenuOpen}
+                                color="inherit"
+                            >
+                                <AccountCircle/>
+                            </IconButton>
+                        </div>
+                        <div className={classes.sectionMobile}>
+                            <IconButton
+                                aria-label="show more"
+                                aria-controls={mobileMenuId}
+                                aria-haspopup="true"
+                                onClick={handleMobileMenuOpen}
+                                color="inherit"
+                            >
+                                <MoreIcon/>
+                            </IconButton>
+                        </div>
+                    </Toolbar>
+                </AppBar>
+                {renderMobileMenu}
+                {renderMenu}
+                {renderNotifications}
+            </div>
+            {redirect && <Redirect to={{
+                pathname: '/users/searchResults',
+                state: {searchResults}
+            }}/>}
+        </React.Fragment>
     );
 };
 

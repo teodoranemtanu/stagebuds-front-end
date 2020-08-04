@@ -20,6 +20,9 @@ const useStyles = makeStyles((theme) => ({
     photo: {
         width: theme.spacing(20),
         height: theme.spacing(20),
+    },
+    loading: {
+        textAlign: 'center'
     }
 }));
 

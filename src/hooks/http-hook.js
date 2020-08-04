@@ -1,10 +1,9 @@
-import {useState, useCallback, useEffect, useRef} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 
 export const useHttpClient = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
     const activeHttpRequest = useRef([]);
-
     const sendRequest = useCallback(async (
         url,
         method = "GET",
@@ -51,7 +50,6 @@ export const useHttpClient = () => {
             activeHttpRequest.current.forEach(abortCtrl => abortCtrl.abort());
         };
     }, []);
-
     return {isLoading, error, sendRequest, clearError};
 };
 

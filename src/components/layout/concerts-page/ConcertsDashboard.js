@@ -3,14 +3,12 @@ import {usePosition} from 'use-position';
 import {useHttpClient} from "../../../hooks/http-hook";
 import {AuthContext} from "../../../contexts/AuthContext";
 import ConcertList from "./ConcertList";
-import Box from "@material-ui/core/Box";
-import Container from "@material-ui/core/Container";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Button from "@material-ui/core/Button";
 import {makeStyles} from "@material-ui/core/styles";
-import red from "@material-ui/core/colors/red";
 import {useTheme} from "@material-ui/styles";
 import Paper from "@material-ui/core/Paper";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -28,6 +26,9 @@ const useStyles = makeStyles((theme) => ({
     },
     buttonItem: {
         color: theme.palette.secondary.white
+    },
+    loading: {
+        textAlign: 'center'
     }
 }));
 
@@ -37,7 +38,7 @@ const ConcertsDashboard = (props) => {
     const watch = true;
     const {latitude, longitude} = usePosition(watch);
     const auth = useContext(AuthContext);
-    const {sendRequest} = useHttpClient();
+    const {sendRequest, isLoading} = useHttpClient();
     const [nearbyConcertData, setNearbyConcertData] = useState(null);
     const [profileConcertData, setProfileConcertData] = useState(null);
     const [displayMode, setDisplayMode] = useState('NEARBY');
@@ -65,7 +66,7 @@ const ConcertsDashboard = (props) => {
     }, [auth.token, latitude, longitude, sendRequest]);
 
     const getProfileConcertData = async () => {
-        console.log('click')
+        console.log('click');
         try {
             const response = await sendRequest(
                 'http://localhost:5000/api/songkick/artists/concerts',
@@ -94,8 +95,11 @@ const ConcertsDashboard = (props) => {
                     }}>Show concerts based on profile</Button>
                 </ButtonGroup>
             </Paper>
-            {nearbyConcertData && displayMode === 'NEARBY' && < ConcertList concerts={nearbyConcertData}/>}
-            {profileConcertData && displayMode === 'PROFILE' && <ConcertList concerts={profileConcertData}/>}
+            <div className={classes.loading}>
+                {isLoading && <CircularProgress disableShrink/>}
+            </div>
+            {!isLoading && nearbyConcertData && displayMode === 'NEARBY' && < ConcertList concerts={nearbyConcertData}/>}
+            {!isLoading && profileConcertData && displayMode === 'PROFILE' && <ConcertList concerts={profileConcertData}/>}
         </React.Fragment>
     );
 

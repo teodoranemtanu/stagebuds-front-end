@@ -1,4 +1,4 @@
-import React, {useCallback, useContext, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import io from 'socket.io-client';
 import {Formik} from "formik";
 import Grid from "@material-ui/core/Grid";
@@ -7,11 +7,10 @@ import SingleInputForm from "./SingleInputForm";
 import Box from "@material-ui/core/Box";
 import {fade, makeStyles} from "@material-ui/core/styles";
 import {useTheme} from "@material-ui/core";
-import ScrollToBottom, {useScrollToBottom, useSticky} from 'react-scroll-to-bottom';
+import ScrollToBottom from 'react-scroll-to-bottom';
 
 import MessageList from "./MessageList";
 import ConversationList from "./ConversationList";
-import SearchBar from "../../shared/SearchBar";
 import {AuthContext} from "../../../contexts/AuthContext";
 
 
@@ -134,7 +133,7 @@ const Messenger = (props) => {
                 <Typography variant="h6" className={classes.title}>
                     Past Conversations
                 </Typography>
-                <SearchBar placeholder="Search for existing chat" classes={classes.search}/>
+                {/*<SearchBar placeholder="Search for existing chat" classes={classes.search}/>*/}
                 <div className={classes.list}>
                     {conversations.length !== 0 && <ConversationList
                         conversations={conversations}

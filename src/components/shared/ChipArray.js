@@ -14,6 +14,7 @@ const useStyes = makeStyles((theme) => ({
 const ChipArray = ({title, items = []}) => {
     const theme = useTheme();
     const classes = useStyes(theme);
+    console.log(items);
     return (
         <React.Fragment>
             <Typography component="h3" paragraph variant="outlined" align="justify" margin='normal'>

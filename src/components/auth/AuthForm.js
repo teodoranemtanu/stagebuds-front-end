@@ -1,11 +1,9 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
 import Grid from "@material-ui/core/Grid";
 import Link from "@material-ui/core/Link";
-import {useTheme, makeStyles} from "@material-ui/core/styles";
+import {makeStyles, useTheme} from "@material-ui/core/styles";
 
 const signUpText = "Don't have an account? Sign up!";
 const signInText = "Already have an account? Sign in";
@@ -100,10 +98,10 @@ const AuthForm = (props) => {
                 helperText={touched.lastName ? errors.lastName : ""}
                 error={touched.lastName && Boolean(errors.lastName)}
             />}
-            {isLoginMode && <FormControlLabel
-                control={<Checkbox value="remember" color="primary"/>}
-                label="Remember me"
-            />}
+            {/*{isLoginMode && <FormControlLabel*/}
+            {/*    control={<Checkbox value="remember" color="primary"/>}*/}
+            {/*    label="Remember me"*/}
+            {/*/>}*/}
             <Button
                 type="submit"
                 fullWidth
@@ -115,11 +113,11 @@ const AuthForm = (props) => {
                 {isLoginMode ? 'Sign In' : 'Create Account'}
             </Button>
             <Grid container>
-                {isLoginMode && <Grid item xs>
-                    <Link href="#" variant="body2" className={classes.secondaryText}>
-                        Forgot password?
-                    </Link>
-                </Grid>}
+                {/*{isLoginMode && <Grid item xs>*/}
+                {/*    <Link href="#" variant="body2" className={classes.secondaryText}>*/}
+                {/*        Forgot password?*/}
+                {/*    </Link>*/}
+                {/*</Grid>}*/}
                 <Grid item>
                     <Link href="#" onClick={switchModeHandler} variant="body2" className={classes.secondaryText}>
                         {isLoginMode ? signUpText : signInText}

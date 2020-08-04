@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import Grid from "@material-ui/core/Grid";
-import {fade, makeStyles, useTheme} from "@material-ui/core/styles";
+import {makeStyles, useTheme} from "@material-ui/core/styles";
 import {useHttpClient} from "../../../hooks/http-hook";
 import {AuthContext} from "../../../contexts/AuthContext";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -57,6 +57,7 @@ const SavedPosts = (props) => {
     const classes = useStyles(theme);
     const auth = useContext(AuthContext);
     const [savedPosts, setSavedPosts] = useState(null);
+    const [selectedItemCoordinates, setSelectedItemCoordinates] = useState(null);
     const {sendRequest} = useHttpClient();
     const watch = true;
     const {latitude, longitude} = usePosition(watch);
@@ -101,7 +102,10 @@ const SavedPosts = (props) => {
                         {savedPosts && savedPosts.map((post) => {
                             return (
                                 <React.Fragment>
-                                    <ListItem className={classes.listItem}>
+                                    <ListItem className={classes.listItem} button onClick={() => {
+                                        setSelectedItemCoordinates(post.concertDetails.coordinates);
+                                        console.log(post.concertDetails.coordinates)
+                                    }}>
                                         <ListItemAvatar>
                                             <Avatar aria-label="avatar" className={classes.avatar}>
                                                 {post.author.profilePicture ? <img src={post.author.profilePicture}

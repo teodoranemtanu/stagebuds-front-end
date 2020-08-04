@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useMemo, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
@@ -91,6 +91,7 @@ const PostsDisplay = () => {
                     "Authorization": 'Bearer: ' + auth.token
                 }
             );
+            console.log(responseData);
             setPostData(postData.filter((post) => {
                 return post.id !== postId
             }));

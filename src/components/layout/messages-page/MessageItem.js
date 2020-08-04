@@ -1,13 +1,10 @@
 import React, {useContext} from 'react';
 import {makeStyles, useTheme} from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import Avatar from "@material-ui/core/Avatar";
-import Link from "@material-ui/core/Link";
 import CardHeader from "@material-ui/core/CardHeader";
 import red from "@material-ui/core/colors/red";
-import Paper from "@material-ui/core/Paper";
 import {AuthContext} from "../../../contexts/AuthContext";
 import clsx from "clsx";
 
@@ -42,11 +39,13 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+const options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
+
 const MessageItem = (props) => {
     const theme = useTheme();
     const classes = useStyles(theme);
     const auth = useContext(AuthContext);
-
+    const timestamp = new Date(props.message.timestamp);
 
     const isOwnerOfMessage = () => {
         return auth.userId === props.message.sender;
@@ -55,7 +54,7 @@ const MessageItem = (props) => {
     return (
         <React.Fragment>
             <Typography variant="overline" color="textSecondary" className={classes.date}>
-                {props.message.timestamp}
+                {timestamp.toLocaleDateString(undefined, options)}
             </Typography>
 
             <Card className={clsx(classes.root, {

@@ -1,10 +1,11 @@
-import React from 'react';
-import {Map, GoogleApiWrapper, Marker} from 'google-maps-react';
+import React, {useState} from 'react';
+import {GoogleApiWrapper, Map, Marker} from 'google-maps-react';
 import Box from "@material-ui/core/Box";
 import useTheme from "@material-ui/core/styles/useTheme";
 import {makeStyles} from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
-import {usePosition} from "use-position";
+import Dialog from "@material-ui/core/Dialog";
+import PostDataDisplay from "../../shared/posts/PostDataDisplay";
 
 const useStyles = makeStyles((theme) => ({
     dimensions: {
@@ -20,6 +21,19 @@ const style = {
 const MapContainer = (props) => {
     const theme = useTheme();
     const classes = useStyles(theme);
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [selectedPost, setSelectedPost] = useState(null);
+
+    const renderPostDetails = () => {
+        return (
+            <Dialog open={dialogOpen} onClose={handleDialogClose}>
+                <PostDataDisplay mapMode={false} post={selectedPost}/>
+            </Dialog>
+        );
+    };
+    const handleDialogClose = () => {
+        setDialogOpen(false);
+    };
 
     const displayMarkers = () => {
         return props.savedPosts.map((post) => {
@@ -27,7 +41,11 @@ const MapContainer = (props) => {
                 <Marker key={post.id} id={post.id} position={{
                     lat: post.concertDetails.coordinates.lat,
                     lng: post.concertDetails.coordinates.lng
-                }} onClick={() => alert("You clicked me!")}/>
+                }} onClick={() => {
+                    console.log(post.author);
+                    setSelectedPost(post);
+                    setDialogOpen(true);
+                }}/>
             );
         });
     };
@@ -42,6 +60,7 @@ const MapContainer = (props) => {
             >
                 {displayMarkers()}
             </Map>
+            {selectedPost && renderPostDetails()}
         </Box>
     );
 };

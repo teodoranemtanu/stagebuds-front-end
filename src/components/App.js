@@ -1,11 +1,5 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {
-    BrowserRouter as Router,
-    Route,
-    Redirect,
-    Switch,
-    useParams
-} from "react-router-dom";
+import React, {useEffect, useState} from 'react';
+import {BrowserRouter as Router, Redirect, Route, Switch} from "react-router-dom";
 import SidePage from './layout/side-page/SidePage';
 import {useAuth} from "../hooks/auth-hook";
 import {AuthContext} from "../contexts/AuthContext";
@@ -26,6 +20,7 @@ import Messenger from "./layout/messages-page/Messenger";
 import socket from '../utils/socketConnection';
 import ConcertsDashboard from "./layout/concerts-page/ConcertsDashboard";
 import SavedPosts from "./layout/saved-posts-page/SavedPosts";
+import SearchResultsProfileDisplay from "./layout/profile-page/SearchResultsProfileDisplay";
 
 
 let drawerWidth = 250;
@@ -146,6 +141,9 @@ const App = (props) => {
 
                         <Route path="/messages" exact>
                             <Messenger/>
+                        </Route>
+
+                        <Route path="/users/searchResults" render={(props) => <SearchResultsProfileDisplay {...props}/>} exact>
                         </Route>
 
                         <Redirect to="/"/>

@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import Theme from '../../../Theme';
 
 export const useStyles = makeStyles(() => ({
@@ -22,5 +22,8 @@ export const useStyles = makeStyles(() => ({
     avatar: {
         margin: Theme.spacing(1),
         backgroundColor: Theme.palette.primary.dark,
+    },
+    title: {
+        color: Theme.palette.primary.dark
     }
 }));

@@ -4,7 +4,6 @@ import Typography from "@material-ui/core/Typography";
 import {makeStyles, useTheme} from "@material-ui/core/styles";
 import CreatePostForm from "./CreatePostForm";
 import {Formik} from "formik";
-import * as yup from "yup";
 import {useHttpClient} from "../../../hooks/http-hook";
 import {AuthContext} from "../../../contexts/AuthContext";
 import {Redirect} from "react-router-dom";
@@ -25,11 +24,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CreatePost = (props) => {
+    const auth = useContext(AuthContext);
+
     const theme = useTheme();
     const classes = useStyles(theme);
     const {isLoading, error, sendRequest, clearError} = useHttpClient();
     const [redirect, setRedirect] = useState(false);
-    const auth = useContext(AuthContext);
     const addInformationText = "Want to go to a specific concert? Create your own post and find your stage buds!";
     const initialFormValues = {title: '', description: '', band: '', date: null, location: ''};
     const postValidationSchema = PostValidationSchema;
